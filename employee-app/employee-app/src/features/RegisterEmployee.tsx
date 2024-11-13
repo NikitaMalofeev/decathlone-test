@@ -73,6 +73,7 @@ export const NameInput: React.FC = () => {
             </Dialog>
             {!isScanning ? (
                 <form onSubmit={formik.handleSubmit} className="flex flex-col items-center">
+                    <h1 className="text-3xl text-[#3643ba] mb-6 text-center">Добро пожаловать</h1>
                     <Input
                         type="text"
                         id="name"
