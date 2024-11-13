@@ -49,7 +49,7 @@ export const QRCodeDisplay: React.FC = () => {
             clearInterval(interval);
             socket.close();
         };
-    }, [generateQRData, isQRCodeExpired, saveQRDataToLocalStorage, setQrData]);
+    }, [generateQRData, isQRCodeExpired, saveQRDataToLocalStorage, setQrData, formatTime]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100" style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
