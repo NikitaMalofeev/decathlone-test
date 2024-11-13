@@ -27,6 +27,7 @@ export const QRCodeDisplay: React.FC = () => {
             }
         };
 
+
         socket.onerror = (error) => {
             console.error('Ошибка WebSocket:', error);
         };

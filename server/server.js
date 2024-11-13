@@ -9,11 +9,12 @@ const http = require('http');
 
 // Creating express app object
 const app = express();
-app.use(cors(corsOptions));
+
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 const db = new sqlite3.Database('./database.db');
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Добавлено значение по умолчанию
+
 let corsOptions = {
     origin: [
         'https://decathlone-employee-app.netlify.app',
@@ -22,8 +23,22 @@ let corsOptions = {
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type']
 };
-server.use(cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(express.json());
+
+// WebSocket-соединение
+wss.on('connection', (ws) => {
+    console.log('Клиент подключился к WebSocket');
+    ws.send('Добро пожаловать! Соединение установлено.');
+
+    ws.on('message', (message) => {
+        console.log('Получено сообщение от клиента:', message);
+    });
+
+    ws.on('close', () => {
+        console.log('Клиент отключился от WebSocket');
+    });
+});
 
 // Database initialization
 db.run(`CREATE TABLE IF NOT EXISTS scan_logs (
@@ -35,6 +50,7 @@ db.run(`CREATE TABLE IF NOT EXISTS scan_logs (
 
 app.options('*', cors(corsOptions));
 
+// Endpoint for scanning
 // Endpoint for scanning
 app.post('/scan', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'https://decathlone-employee-app.netlify.app');
@@ -53,9 +69,15 @@ app.post('/scan', (req, res) => {
             }
             res.status(200).send('Данные успешно сохранены');
 
+            // Отправка сообщения всем подключенным клиентам WebSocket
             wss.clients.forEach((client) => {
                 if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({ employeeName, qrCode, scanTime }));
+                    client.send(JSON.stringify({
+                        type: 'scan', // Добавлено поле type для идентификации сообщения
+                        employeeName,
+                        qrCode,
+                        scanTime
+                    }));
                 }
             });
         }
