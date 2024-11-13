@@ -1,34 +1,37 @@
+// Filename - server.js
+
+// Requiring modules
 const express = require('express');
+const cors = require('cors');
 const WebSocket = require('ws');
 const sqlite3 = require('sqlite3').verbose();
 const http = require('http');
-const cors = require('cors');
 
+// Creating express app object
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 const db = new sqlite3.Database('./database.db');
 const PORT = process.env.PORT || 3000;
-const allowedOrigins = [
-    'https://decathlone-employee-app.netlify.app',
-    'https://decathlone-qr-code-app.netlify.app'
-];
 
-app.use(cors({
-    origin: 'https://decathlone-employee-app.netlify.app',
+// CORS configuration for specific origins
+let corsOptions = {
+    origin: [
+        'https://decathlone-employee-app.netlify.app',
+        'https://decathlone-qr-code-app.netlify.app'
+    ],
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type']
-}));
+};
+
+// Middleware setup
 app.use(express.json());
+app.use(cors(corsOptions)); // Using cors with the specified options
 
+// Ensure preflight requests are handled
+app.options('*', cors(corsOptions));
 
-app.options('/scan', (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://decathlone-employee-app.netlify.app');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.sendStatus(200);
-});
-
+// Database initialization
 db.run(`CREATE TABLE IF NOT EXISTS scan_logs (
   id INTEGER PRIMARY KEY,
   employee_name TEXT,
@@ -36,11 +39,8 @@ db.run(`CREATE TABLE IF NOT EXISTS scan_logs (
   scan_time TIMESTAMP
 )`);
 
-app.post('/scan', (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://decathlone-employee-app.netlify.app');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+// Endpoint for scanning
+app.post('/scan', cors(corsOptions), (req, res) => {
     const { employeeName, qrCode } = req.body;
     const scanTime = new Date().toISOString();
 
@@ -62,8 +62,7 @@ app.post('/scan', (req, res) => {
     );
 });
 
-
-
+// Start server
 server.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
 });
