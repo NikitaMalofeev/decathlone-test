@@ -73,7 +73,7 @@ export const NameInput: React.FC = () => {
                         onError={handleError}
                         onScan={handleScan}
                         style={{ width: '100%' }}
-                        facingMode="environment" // можно задать сторону камеры
+                        facingMode="user"
                     />
                     <p className="mt-4">Сканируйте QR-код</p>
                 </div>
