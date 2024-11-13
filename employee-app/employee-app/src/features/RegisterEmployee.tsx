@@ -92,13 +92,13 @@ export const NameInput: React.FC = () => {
                     </Button>
                 </form>
             ) : (
-                <div className="relative w-full h-full">
+                <div className="flex relative w-full h-full" style={{ touchAction: 'none' }}>
                     <Webcam
                         audio={false}
                         ref={webcamRef}
                         screenshotFormat="image/jpeg"
                         videoConstraints={{ facingMode: 'environment' }}
-                        style={{ width: '100%', height: '100%' }}
+                        style={{ width: '100%' }}
                     />
                     <QRScannerOverlay />
                 </div>
