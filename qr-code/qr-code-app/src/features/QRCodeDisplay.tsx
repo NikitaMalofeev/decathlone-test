@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useQRCodeManager } from '../shared/hooks/useQRCodeManager';
-import { useFormattedTime } from '../shared/hooks/useFormattedTime';
+import { useFormatTime } from '../shared/hooks/useFormattedTime';
 
 export const QRCodeDisplay: React.FC = () => {
     const { qrData, setQrData, generateQRData, isQRCodeExpired, saveQRDataToLocalStorage } = useQRCodeManager();
     const [lastScan, setLastScan] = useState<string | null>(null);
+    const { formatTime } = useFormatTime()
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -25,7 +26,7 @@ export const QRCodeDisplay: React.FC = () => {
             try {
                 const data = JSON.parse(event.data);
                 if (data.type === 'scan') {
-                    const formattedTime = useFormattedTime(data.scanTime);
+                    const formattedTime = formatTime(data.scanTime);
                     setLastScan(`Сотрудник: ${data.employeeName}, Время сканирования: ${formattedTime}`);
                     const newQRData = generateQRData();
                     setQrData(newQRData);
@@ -51,13 +52,15 @@ export const QRCodeDisplay: React.FC = () => {
     }, [generateQRData, isQRCodeExpired, saveQRDataToLocalStorage, setQrData]);
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen bg-gray-100 p-4">
-            <div className="bg-white p-6 shadow-lg rounded-md flex items-center justify-center">
-                <QRCodeCanvas value={qrData} size={256} />
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100" style={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ margin: 'auto 0', height: '400px', display: 'flex', flexDirection: 'column', gap: 25 }}>
+                <QRCodeCanvas value={qrData} size={256} className="mx-auto" style={{ margin: '0 auto' }} />
+                <p className="mt-20 text-lg text-gray-700 text-center">
+                    {lastScan ? `Последнее сканирование: ${lastScan}` : 'Ожидание сканирования...'}
+                </p>
             </div>
-            <p className="mt-6 text-lg text-gray-700 text-center">
-                {lastScan ? `Последнее сканирование: ${lastScan}` : 'Ожидание сканирования...'}
-            </p>
         </div>
+
+
     );
 };

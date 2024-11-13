@@ -1,4 +1,4 @@
-import { NameInput } from "../features/NameInput";
+import { NameInput } from "../features/RegisterEmployee";
 
 export const MainPage = () => {
     return (

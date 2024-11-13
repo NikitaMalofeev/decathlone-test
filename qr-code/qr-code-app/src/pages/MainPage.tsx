@@ -2,7 +2,7 @@ import { QRCodeDisplay } from "../features/QRCodeDisplay";
 
 export const MainPage = () => {
     return (
-        <div>
+        <div style={{ height: '100%' }}>
             <QRCodeDisplay />
         </div>
     );
