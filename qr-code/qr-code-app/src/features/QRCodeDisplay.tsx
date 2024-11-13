@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
+import QrReader from 'react-qr-scanner';
 
 export const QRCodeDisplay: React.FC = () => {
     const [qrData, setQrData] = useState<string>(generateQRData());
@@ -8,7 +9,7 @@ export const QRCodeDisplay: React.FC = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             setQrData(generateQRData());
-        }, 600000); 
+        }, 600000);
 
         const socket = new WebSocket('ws://localhost:3000');
         socket.onopen = () => {
@@ -41,9 +42,27 @@ export const QRCodeDisplay: React.FC = () => {
         };
     }, []);
 
+    const handleScan = (data: string | null) => {
+        if (data) {
+            console.log('QR-код отсканирован:', data);
+            setQrData(generateQRData()); 
+            setLastScan(`Отсканировано: ${data}`);
+        }
+    };
+
+    const handleError = (error: any) => {
+        console.error('Ошибка при сканировании:', error);
+    };
+
     return (
         <div className="flex flex-col items-center justify-center h-screen">
             <QRCodeCanvas value={qrData} size={256} />
+            <QrReader
+                delay={300}
+                onError={handleError}
+                onScan={handleScan}
+                style={{ width: '100%' }}
+            />
             <p className="mt-4">{lastScan ? `Последнее сканирование: ${lastScan}` : 'Ожидание сканирования...'}</p>
         </div>
     );
