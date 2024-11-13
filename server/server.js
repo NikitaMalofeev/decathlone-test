@@ -2,13 +2,17 @@ const express = require('express');
 const WebSocket = require('ws');
 const sqlite3 = require('sqlite3').verbose();
 const http = require('http');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 const db = new sqlite3.Database('./database.db');
+const PORT = process.env.PORT || 3000;
+
 
 app.use(express.json());
+app.use(cors());
 
 db.run(`CREATE TABLE IF NOT EXISTS scan_logs (
   id INTEGER PRIMARY KEY,
@@ -39,6 +43,6 @@ app.post('/scan', (req, res) => {
     );
 });
 
-server.listen(3000, () => {
-    console.log('Сервер запущен на порту 3000');
+server.listen(PORT, () => {
+    console.log(`Сервер запущен на порту ${PORT}`);
 });
