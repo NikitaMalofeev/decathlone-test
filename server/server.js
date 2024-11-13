@@ -9,10 +9,22 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 const db = new sqlite3.Database('./database.db');
 const PORT = process.env.PORT || 3000;
-
+const allowedOrigins = [
+    'https://decathlone-employee-app.netlify.app',
+    'https://decathlone-qr-code-app.netlify.app'
+];
 
 app.use(express.json());
-app.use(cors());
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+}));
 
 db.run(`CREATE TABLE IF NOT EXISTS scan_logs (
   id INTEGER PRIMARY KEY,
