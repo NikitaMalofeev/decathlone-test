@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import jsQR from 'jsqr';
 import { useFormik } from 'formik';
@@ -13,11 +13,15 @@ import {
 } from "../shared/components/ui/dialog";
 import { Button } from '../shared/components/ui/button';
 import { QRScannerOverlay } from '../shared/ui/QRScannerOverlay';
+import { useScanStore } from '../entities/store/useScanStore';
+import { useScan } from '../entities/api/useScan';
+
 
 export const NameInput: React.FC = () => {
-    const [isScanning, setIsScanning] = useState<boolean>(false);
-    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-    const [dialogMessage, setDialogMessage] = useState<string>('');
+    const dialogMessage = useScanStore((state) => state.message);
+    const isScanning = useScanStore((state) => state.isScanning);
+    const setIsScanning = useScanStore((state) => state.setIsScanning);
+    const { handleScan } = useScan();
     const webcamRef = useRef<Webcam>(null);
 
     const formik = useFormik({
@@ -31,8 +35,6 @@ export const NameInput: React.FC = () => {
         }),
         onSubmit: (values) => {
             localStorage.setItem('employeeName', values.name);
-            setDialogMessage('Имя сохранено в localStorage');
-            setDialogOpen(true);
             setIsScanning(true);
         },
     });
@@ -56,47 +58,16 @@ export const NameInput: React.FC = () => {
 
             return () => clearInterval(interval);
         }
-    }, [isScanning]);
-
-    const handleScan = (data: string | null) => {
-        if (data) {
-            const employeeName = localStorage.getItem('employeeName');
-            if (employeeName) {
-                fetch('https://vast-river-40196-2d5c15ab6cd6.herokuapp.com/scan', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        employeeName,
-                        qrCode: data,
-                    }),
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            setDialogMessage('Сканирование выполнено, данные отправлены');
-                        } else {
-                            setDialogMessage('Ошибка при отправке данных');
-                        }
-                        setDialogOpen(true);
-                        setIsScanning(false);
-                    })
-                    .catch(() => {
-                        setDialogMessage('Ошибка соединения с сервером');
-                        setDialogOpen(true);
-                    });
-            }
-        }
-    };
+    }, [isScanning, handleScan]);
 
     return (
         <div className="flex flex-col items-center justify-center h-screen">
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog open={!!dialogMessage} onOpenChange={() => { }}>
                 <DialogContent>
                     <DialogTitle>Уведомление</DialogTitle>
                     <DialogDescription>{dialogMessage}</DialogDescription>
                     <DialogFooter>
-                        <Button onClick={() => setDialogOpen(false)}>OK</Button>
+                        <Button onClick={() => useScanStore.getState().setMessage('')}>OK</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
