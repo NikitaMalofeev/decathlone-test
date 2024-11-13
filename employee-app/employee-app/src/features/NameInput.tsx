@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { QrReader } from 'react-qr-reader';
+import QrReader from 'react-qr-scanner';
 
 export const NameInput: React.FC = () => {
     const [name, setName] = useState<string>('');
@@ -9,7 +9,7 @@ export const NameInput: React.FC = () => {
         if (name) {
             localStorage.setItem('employeeName', name);
             alert('Имя сохранено в localStorage');
-            setIsScanning(true); 
+            setIsScanning(true);
         }
     };
 
@@ -30,7 +30,7 @@ export const NameInput: React.FC = () => {
                     .then(response => {
                         if (response.ok) {
                             alert('Сканирование выполнено, данные отправлены');
-                            setIsScanning(false); 
+                            setIsScanning(false);
                         } else {
                             alert('Ошибка при отправке данных');
                         }
@@ -69,11 +69,11 @@ export const NameInput: React.FC = () => {
             ) : (
                 <div className="w-full h-full">
                     <QrReader
-                        constraints={{ facingMode: 'environment' }}
-                        onResult={(result, error) => {
-                            if (result) handleScan(result.getText());
-                            if (error) handleError(error);
-                        }}
+                        delay={300}
+                        onError={handleError}
+                        onScan={handleScan}
+                        style={{ width: '100%' }}
+                        facingMode="environment" // можно задать сторону камеры
                     />
                     <p className="mt-4">Сканируйте QR-код</p>
                 </div>
