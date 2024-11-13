@@ -52,12 +52,6 @@ export const NameInput: React.FC = () => {
         }
     };
 
-    const handleError = (error: any) => {
-        console.error('Ошибка сканирования:', error);
-        alert('Ошибка при доступе к камере');
-        setIsScanning(false);
-    };
-
     return (
         <div className="flex flex-col items-center justify-center h-screen">
             {!isScanning ? (
