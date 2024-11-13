@@ -10,7 +10,7 @@ export const QRCodeDisplay: React.FC = () => {
             setQrData(generateQRData());
         }, 600000);
 
-        const socket = new WebSocket('wss://https://vast-river-40196-2d5c15ab6cd6.herokuapp.com');
+        const socket = new WebSocket('wss://vast-river-40196-2d5c15ab6cd6.herokuapp.com');
         socket.onopen = () => {
             console.log('WebSocket соединение открыто');
         };
