@@ -27,7 +27,8 @@ export const NameInput: React.FC = () => {
         if (data) {
             const employeeName = localStorage.getItem('employeeName');
             if (employeeName) {
-                fetch('https://vast-river-40196-2d5c15ab6cd6.herokuapp.com/scan', {
+                // fetch('https://vast-river-40196-2d5c15ab6cd6.herokuapp.com/scan', {
+                fetch('localhost:3000/scan', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
