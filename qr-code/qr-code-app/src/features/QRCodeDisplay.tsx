@@ -27,7 +27,7 @@ export const QRCodeDisplay: React.FC = () => {
                 const data = JSON.parse(event.data);
                 if (data.type === 'scan') {
                     const formattedTime = formatTime(data.scanTime);
-                    setLastScan(`Сотрудник: ${data.employeeName}, Время сканирования: ${formattedTime}`);
+                    setLastScan(`Сотрудник ${data.employeeName} Время сканирования: ${formattedTime}`);
                     const newQRData = generateQRData();
                     setQrData(newQRData);
                     saveQRDataToLocalStorage(newQRData);
