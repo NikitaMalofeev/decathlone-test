@@ -17,18 +17,16 @@ const PORT = process.env.PORT || 3000;
 // CORS configuration for specific origins
 let corsOptions = {
     origin: [
-        'https://decathlone-employee-app.netlify.app',
-        'https://decathlone-qr-code-app.netlify.app'
+        'decathlone-employee-app.netlify.app',
+        'decathlone-qr-code-app.netlify.app'
     ],
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type']
 };
 
-// Middleware setup
 app.use(express.json());
-app.use(cors(corsOptions)); // Using cors with the specified options
+app.use(cors(corsOptions));
 
-// Ensure preflight requests are handled
 app.options('*', cors(corsOptions));
 
 // Database initialization
