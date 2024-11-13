@@ -15,16 +15,10 @@ const allowedOrigins = [
 ];
 
 app.use(express.json());
-app.options('*', cors());
-
 app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    }
+    origin: ['https://decathlone-employee-app.netlify.app', 'https://decathlone-qr-code-app.netlify.app'],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
 }));
 
 app.options('*', cors());
@@ -37,6 +31,8 @@ db.run(`CREATE TABLE IF NOT EXISTS scan_logs (
 )`);
 
 app.post('/scan', (req, res) => {
+    res.header('Access-Control-Allow-Origin', 'https://decathlone-employee-app.netlify.app');
+
     const { employeeName, qrCode } = req.body;
     const scanTime = new Date().toISOString();
 
@@ -57,6 +53,7 @@ app.post('/scan', (req, res) => {
         }
     );
 });
+
 
 server.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
