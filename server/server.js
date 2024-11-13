@@ -15,6 +15,7 @@ const allowedOrigins = [
 ];
 
 app.use(express.json());
+app.options('*', cors());
 
 app.use(cors({
     origin: (origin, callback) => {
@@ -25,6 +26,8 @@ app.use(cors({
         }
     }
 }));
+
+app.options('*', cors());
 
 db.run(`CREATE TABLE IF NOT EXISTS scan_logs (
   id INTEGER PRIMARY KEY,
