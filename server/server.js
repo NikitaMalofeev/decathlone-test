@@ -9,6 +9,7 @@ const http = require('http');
 
 // Creating express app object
 const app = express();
+app.use(cors(corsOptions));
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 const db = new sqlite3.Database('./database.db');
@@ -21,8 +22,7 @@ let corsOptions = {
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type']
 };
-
-app.use(cors(corsOptions));
+server.use(cors(corsOptions));
 app.use(express.json());
 
 // Database initialization
