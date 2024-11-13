@@ -14,14 +14,20 @@ const allowedOrigins = [
     'https://decathlone-qr-code-app.netlify.app'
 ];
 
-app.use(express.json());
 app.use(cors({
-    origin: ['https://decathlone-employee-app.netlify.app', 'https://decathlone-qr-code-app.netlify.app'],
-    methods: ['GET', 'POST'],
+    origin: 'https://decathlone-employee-app.netlify.app',
+    methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type']
 }));
+app.use(express.json());
 
-app.options('*', cors());
+
+app.options('/scan', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', 'https://decathlone-employee-app.netlify.app');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.sendStatus(200);
+});
 
 db.run(`CREATE TABLE IF NOT EXISTS scan_logs (
   id INTEGER PRIMARY KEY,
@@ -31,7 +37,9 @@ db.run(`CREATE TABLE IF NOT EXISTS scan_logs (
 )`);
 
 app.post('/scan', (req, res) => {
-    res.header('Access-Control-Allow-Origin', 'https://decathlone-employee-app.netlify.app');
+    res.setHeader('Access-Control-Allow-Origin', 'https://decathlone-employee-app.netlify.app');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     const { employeeName, qrCode } = req.body;
     const scanTime = new Date().toISOString();
@@ -53,6 +61,7 @@ app.post('/scan', (req, res) => {
         }
     );
 });
+
 
 
 server.listen(PORT, () => {
