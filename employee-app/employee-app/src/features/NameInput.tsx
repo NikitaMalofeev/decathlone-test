@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import QrReader from 'react-qr-scanner';
+import React, { useState, useRef, useCallback } from 'react';
+import Webcam from 'react-webcam';
 
 export const NameInput: React.FC = () => {
     const [name, setName] = useState<string>('');
     const [isScanning, setIsScanning] = useState<boolean>(false);
+    const webcamRef = useRef<Webcam>(null);
 
     const handleSaveName = () => {
         if (name) {
@@ -12,6 +13,15 @@ export const NameInput: React.FC = () => {
             setIsScanning(true);
         }
     };
+
+    const captureImage = useCallback(() => {
+        if (webcamRef.current) {
+            const imageSrc = webcamRef.current.getScreenshot();
+            if (imageSrc) {
+                handleScan(imageSrc);
+            }
+        }
+    }, [webcamRef]);
 
     const handleScan = (data: string | null) => {
         if (data) {
@@ -68,13 +78,19 @@ export const NameInput: React.FC = () => {
                 </>
             ) : (
                 <div className="w-full h-full">
-                    <QrReader
-                        delay={300}
-                        onError={handleError}
-                        onScan={handleScan}
+                    <Webcam
+                        audio={false}
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        videoConstraints={{ facingMode: 'environment' }}
                         style={{ width: '100%' }}
-                        facingMode="user"
                     />
+                    <button
+                        className="mt-4 p-2 bg-green-500 text-white rounded"
+                        onClick={captureImage}
+                    >
+                        Включить камеру
+                    </button>
                     <p className="mt-4">Сканируйте QR-код</p>
                 </div>
             )}
